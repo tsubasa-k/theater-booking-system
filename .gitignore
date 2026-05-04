@@ -1,0 +1,61 @@
+# ===== Visual Studio / .NET =====
+bin/
+obj/
+packages/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Bb]uild/
+bld/
+
+# NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# Roslyn cache
+*.ncrunch*
+*.pdb
+*.cache
+*.pftcache
+*.opendb
+
+# Resharper
+_ReSharper*/
+
+# IIS Express settings
+.vs/config/applicationhost.config
+
+# ===== Access lock files =====
+*.laccdb
+*.ldb
+
+# ===== Backups / Archives =====
+*.zip
+*.rar
+*.7z
+*.bak
+*.old
+
+# ===== OS =====
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ===== Local secrets =====
+*.local.config
+appsettings.local.json
+secrets.config
+
+# ===== Docs (本機保留，不上傳) =====
+docs/
