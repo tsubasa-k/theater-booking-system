@@ -5,6 +5,8 @@
 
 一個使用 ASP.NET WebForms + Microsoft Access 資料庫實作的線上「表演場地預約 + 線上劃位」系統，含三類使用者（管理員 / 表演團體 / 顧客），支援預約、查詢、劃位、Email 通知。
 
+> 📄 想看實際畫面與系統流程介紹，請看 [**REPORT.md**](REPORT.md)。
+
 ---
 
 ## 系統功能
@@ -46,10 +48,12 @@
 theater-booking-system/
 ├── README.md
 ├── .gitignore
+├── REPORT.md                       ← 系統介紹報告（含畫面截圖）
 ├── database/                       ← Access 資料庫（程式預期擺在 D:\Database\）
 │   ├── Booking.accdb               ← 預約 / 劃位資料
 │   ├── Data.accdb                  ← 使用者帳號資料（已預塞 demo 帳號）
 │   └── seed_demo_accounts.sql      ← demo 帳號的 SQL 種子檔
+├── images/                         ← 系統畫面截圖（供 REPORT.md 引用）
 └── src/
     └── WebForm1/                   ← 主專案
         ├── WebForm1.sln
