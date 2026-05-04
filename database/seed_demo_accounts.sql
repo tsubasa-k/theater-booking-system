@@ -3,7 +3,7 @@
 -- 適用於 Microsoft Access (.accdb)，目標: D:\Database\Data.accdb 的 Data 資料表
 -- 表結構: Num (long), account, password, username, role, email
 --
--- ⚠️ 這些密碼是明文儲存（受限於原專案設計），僅供本機 demo / 課堂展示，
+--    這些密碼是明文儲存（受限於原專案設計），僅供本機 demo 展示，
 --    請不要在正式環境使用相同帳密。
 -- ============================================================
 
