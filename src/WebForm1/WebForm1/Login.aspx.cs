@@ -37,9 +37,12 @@ namespace WebForm1
 
             string AC = txtAccount.Text;//獲得account
             string PS = txtPassword.Text;//獲得password
-            //下資料庫指令
-            string cmd = "SELECT * FROM Data WHERE account = '" + AC + "' AND password = '" + PS + "';";
+            //下資料庫指令（參數化查詢，避免 SQL Injection）
+            //  Access OleDb 用 '?' 占位符，參數順序對應 SQL 中 '?' 出現的順序
+            string cmd = "SELECT * FROM Data WHERE account = ? AND [password] = ?";
             OleDbCommand DbCommand = new OleDbCommand(cmd, objc);
+            DbCommand.Parameters.AddWithValue("@account", AC);
+            DbCommand.Parameters.AddWithValue("@password", PS);
 
             //reader接收執行結果
             Reader = DbCommand.ExecuteReader();
