@@ -18,6 +18,7 @@ using System.Data.Common;
 using System.Runtime.Remoting.Messaging;
 using System.Diagnostics;
 using System.Web.Services.Description;
+using WebForm1.Helpers;
 
 
 namespace WebForm1
@@ -85,7 +86,7 @@ namespace WebForm1
             // 新增使用者到資料庫
             string SQL = "SELECT role FROM Data WHERE username = @Username";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -133,7 +134,7 @@ namespace WebForm1
         {
             // 在這裡查詢資料庫，獲取指定場地和日期範圍內的預訂資訊
             // 使用你的連接字串和查詢語句
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
 
             using (OleDbConnection objConn = new OleDbConnection(Dbc))
             {
@@ -253,7 +254,7 @@ namespace WebForm1
 
             // 在這裡查詢資料庫，獲取已經預訂的時間
             // 使用你的連接字串和查詢語句
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
             using (OleDbConnection objConn = new OleDbConnection(Dbc))
             {
                 string query = "SELECT Time FROM booking WHERE Venue = @Venue AND Date = @Date";
@@ -301,7 +302,7 @@ namespace WebForm1
 
         private void SaveBooking(string venue, string date, string time)
         {
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
 
             // 建立connection對象
             OleDbConnection objConn = new OleDbConnection(Dbc);
@@ -386,7 +387,7 @@ namespace WebForm1
         private void SendReservationEmail(string venue, string date, string account, string username)
         {
             // 連接資料庫，讀取收件人的電子郵件地址
-            string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string connectionString = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(connectionString))
             {

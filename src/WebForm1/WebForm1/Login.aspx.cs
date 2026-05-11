@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using WebForm1.Helpers;
 
 namespace WebForm1
 {
@@ -26,7 +27,7 @@ namespace WebForm1
             // 這裡需要連接資料庫，查詢使用者訊息，然後檢查使用者名稱和密碼是否匹配
             // 假設你有一個名為 "login" 的表，包含 "account" 和 "password" 欄
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             //建立connection物件
             OleDbConnection objc = new OleDbConnection(Dbc);
@@ -37,14 +38,47 @@ namespace WebForm1
 
             string AC = txtAccount.Text;//獲得account
             string PS = txtPassword.Text;//獲得password
-            //下資料庫指令
-            string cmd = "SELECT * FROM Data WHERE account = '" + AC + "' AND password = '" + PS + "';";
+            //下資料庫指令（參數化查詢，避免 SQL Injection）
+            //  改成只用 account 查詢，密碼比對改在程式中用 PBKDF2 verify
+            //  原因：密碼存的可能是雜湊也可能是舊明文（懶惰遷移），DB 無法直接比較
+            string cmd = "SELECT * FROM Data WHERE account = ?";
             OleDbCommand DbCommand = new OleDbCommand(cmd, objc);
+            DbCommand.Parameters.AddWithValue("@account", AC);
 
             //reader接收執行結果
             Reader = DbCommand.ExecuteReader();
 
-            if (Reader.Read())//如果有找到對應的帳密
+            bool authenticated = false;
+            string storedPwd = null;
+            if (Reader.Read())
+            {
+                storedPwd = Convert.ToString(Reader["password"]);
+                // 用 PasswordHelper 比對；若 stored 為舊明文且比對成功，會回報 isLegacyPlain
+                bool isLegacyPlain;
+                authenticated = PasswordHelper.Verify(PS, storedPwd, out isLegacyPlain);
+
+                if (authenticated && isLegacyPlain)
+                {
+                    // 懶惰遷移：登入成功且原本是明文，立刻升級為雜湊存回 DB
+                    Reader.Close();
+                    string upgradeSql = "UPDATE Data SET [password] = ? WHERE account = ?";
+                    using (var upgradeCmd = new OleDbCommand(upgradeSql, objc))
+                    {
+                        upgradeCmd.Parameters.AddWithValue("@password", PasswordHelper.Hash(PS));
+                        upgradeCmd.Parameters.AddWithValue("@account", AC);
+                        upgradeCmd.ExecuteNonQuery();
+                    }
+                    // 重新查一次以取得 username
+                    using (var refetch = new OleDbCommand("SELECT username, account FROM Data WHERE account = ?", objc))
+                    {
+                        refetch.Parameters.AddWithValue("@account", AC);
+                        Reader = refetch.ExecuteReader();
+                        Reader.Read();
+                    }
+                }
+            }
+
+            if (authenticated)
             {
                 object usernameObject = Reader["username"]; //獲得username欄位
                 object accountObject = Reader["account"];

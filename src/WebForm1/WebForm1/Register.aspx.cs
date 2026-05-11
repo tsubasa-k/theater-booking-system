@@ -11,6 +11,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using WebForm1.Helpers;
 
 namespace WebForm1
 {
@@ -27,7 +28,7 @@ namespace WebForm1
             // 這裡需要連接資料庫，執行插入使用者資訊的操作
             // 假設你有一個名為 "login" 的表，包含 "account"、"password"、 "name" 和 "Num" 欄
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             // 建立connection對象
             OleDbConnection objConn = new OleDbConnection(Dbc);
@@ -64,7 +65,8 @@ namespace WebForm1
                     OleDbCommand command = new OleDbCommand(insertUserQuery, objConn);
                     command.Parameters.AddWithValue("@Num", newNum);
                     command.Parameters.AddWithValue("@Account", newAccount);
-                    command.Parameters.AddWithValue("@Password", newPassword);
+                    // 密碼經 PBKDF2 雜湊後再寫入，永遠不存明文
+                    command.Parameters.AddWithValue("@Password", PasswordHelper.Hash(newPassword));
                     command.Parameters.AddWithValue("@Username", newName);
                     command.Parameters.AddWithValue("@Role", "user");
                     command.Parameters.AddWithValue("@Email", newEmail);

@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using WebForm1.Helpers;
 
 namespace WebForm1
 {
@@ -72,7 +73,7 @@ namespace WebForm1
             // 新增使用者到資料庫
             string SQL = "SELECT role FROM Data WHERE username = @Username";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -102,7 +103,7 @@ namespace WebForm1
         // 綁定 GridView 中的資料
         private void BindUsers()
         {
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
                 string query = "SELECT * FROM Data";
@@ -120,7 +121,7 @@ namespace WebForm1
         {
             List<UserInfo> users = new List<UserInfo>();
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             //建立connection物件
             using (OleDbConnection objc = new OleDbConnection(Dbc))
@@ -196,7 +197,7 @@ namespace WebForm1
             // 使用 SQL UPDATE 語句
             string updateQuery = "UPDATE Data SET [password] = @Password, username = @Username, role = @Role, email = @Email WHERE account = @Account";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -288,7 +289,7 @@ namespace WebForm1
             // 新增使用者到資料庫
             string insertQuery = "INSERT INTO Data (Num, account, [password], username, role, email) VALUES (@Num, @Account, @Password, @Username, @Role, @Email)";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -390,7 +391,7 @@ namespace WebForm1
             // 在這裡實作刪除資料的邏輯，可以使用 SQL DELETE 語句
             string deleteQuery = "DELETE FROM Data WHERE account = @Account";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {

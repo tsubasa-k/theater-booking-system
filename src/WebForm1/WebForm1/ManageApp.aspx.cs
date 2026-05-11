@@ -8,6 +8,7 @@ using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Security.Principal;
+using WebForm1.Helpers;
 
 
 namespace WebForm1
@@ -73,7 +74,7 @@ namespace WebForm1
             // 新增使用者到資料庫
             string SQL = "SELECT role FROM Data WHERE username = @Username";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -103,7 +104,7 @@ namespace WebForm1
         // 綁定 GridView 中的資料
         private void BindUsers()
         {
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
                 string query = "SELECT * FROM booking";
@@ -125,7 +126,7 @@ namespace WebForm1
         {
             List<DataInfo> datas = new List<DataInfo>();
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
 
             //建立connection物件
             using (OleDbConnection objc = new OleDbConnection(Dbc))
@@ -193,7 +194,7 @@ namespace WebForm1
             {
                 venue = "venue3";
             }
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
                 string query = string.Format("SELECT * FROM {0}", venue);
@@ -226,7 +227,7 @@ namespace WebForm1
                 venue = "venue3";
             }
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
 
             //建立connection物件
             using (OleDbConnection objc = new OleDbConnection(Dbc))
@@ -302,7 +303,7 @@ namespace WebForm1
             // 新增使用者到資料庫
             string insertQuery = "INSERT INTO booking VALUES (@Num, @Venue, @Date, @Time)";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -392,7 +393,7 @@ namespace WebForm1
             // 新增使用者到資料庫
             string insertQuery = string.Format("INSERT INTO {0} VALUES (@Num, @Date, @Time)", venue);
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -476,7 +477,7 @@ namespace WebForm1
             // 在這裡實作刪除資料的邏輯，可以使用 SQL DELETE 語句
             string deleteQuery = "DELETE FROM booking WHERE Venue = @Venue AND Date = @Date AND Time = @Time";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -551,7 +552,7 @@ namespace WebForm1
             // 在這裡實作刪除資料的邏輯，可以使用 SQL DELETE 語句
             string deleteQuery = string.Format("DELETE FROM {0} WHERE Date = @Date AND SeatNo = @SeatNo", venue);
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string Dbc = DbConfig.BookingDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
