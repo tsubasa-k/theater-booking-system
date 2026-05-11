@@ -34,9 +34,22 @@
                         <li class="nav-item">
                             <a class="nav-link" href="Booking.aspx">Booking</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="Login.aspx">Login</a>
-                        </li>
+                        <asp:PlaceHolder ID="phLoggedOut" runat="server" Visible="true">
+                            <li class="nav-item">
+                                <a class="nav-link" href="Login.aspx">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="Register.aspx">Register</a>
+                            </li>
+                        </asp:PlaceHolder>
+                        <asp:PlaceHolder ID="phLoggedIn" runat="server" Visible="false">
+                            <li class="nav-item">
+                                <span class="navbar-text mr-2"><asp:Label ID="lblUser" runat="server" /></span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="Logout.aspx">Logout</a>
+                            </li>
+                        </asp:PlaceHolder>
                     </ul>
                 </div>
             </div>

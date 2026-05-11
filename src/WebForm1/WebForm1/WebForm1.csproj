@@ -128,6 +128,7 @@
     <Content Include="Global.asax" />
     <Content Include="Images\background.jpg" />
     <Content Include="Login.aspx" />
+    <Content Include="Logout.aspx" />
     <Content Include="Main.aspx" />
     <Content Include="ManageApp.aspx" />
     <Content Include="Membership.aspx" />
@@ -205,6 +206,10 @@
     <Compile Include="Helpers\VenueHelper.cs" />
     <Compile Include="Helpers\PasswordHelper.cs" />
     <Compile Include="Helpers\DbConfig.cs" />
+    <Compile Include="Logout.aspx.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
