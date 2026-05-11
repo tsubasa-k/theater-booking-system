@@ -28,7 +28,7 @@ namespace WebForm1
             // 這裡需要連接資料庫，執行插入使用者資訊的操作
             // 假設你有一個名為 "login" 的表，包含 "account"、"password"、 "name" 和 "Num" 欄
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             // 建立connection對象
             OleDbConnection objConn = new OleDbConnection(Dbc);

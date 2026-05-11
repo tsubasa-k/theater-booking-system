@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using WebForm1.Helpers;
 
 namespace WebForm1
 {
@@ -111,7 +112,7 @@ namespace WebForm1
             // 新增使用者到資料庫
             string SQL = "SELECT role FROM Data WHERE username = @Username";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {

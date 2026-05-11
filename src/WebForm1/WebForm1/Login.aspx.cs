@@ -27,7 +27,7 @@ namespace WebForm1
             // 這裡需要連接資料庫，查詢使用者訊息，然後檢查使用者名稱和密碼是否匹配
             // 假設你有一個名為 "login" 的表，包含 "account" 和 "password" 欄
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             //建立connection物件
             OleDbConnection objc = new OleDbConnection(Dbc);

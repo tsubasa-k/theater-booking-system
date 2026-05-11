@@ -204,6 +204,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="Helpers\VenueHelper.cs" />
     <Compile Include="Helpers\PasswordHelper.cs" />
+    <Compile Include="Helpers\DbConfig.cs" />
     <Compile Include="About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

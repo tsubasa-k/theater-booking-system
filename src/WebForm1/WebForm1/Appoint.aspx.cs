@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Web.Services.Description;
 using System.Web.Optimization;
 using System.Web.Security;
+using WebForm1.Helpers;
 
 namespace WebForm1
 {
@@ -79,7 +80,7 @@ namespace WebForm1
             // 新增使用者到資料庫
             string SQL = "SELECT role FROM Data WHERE username = @Username";
 
-            string Dbc = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string Dbc = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(Dbc))
             {
@@ -155,7 +156,7 @@ namespace WebForm1
             seatStatus = Enumerable.Repeat("Avaliable", totalSeats).ToList();
 
             // 連接資料庫，讀取已預訂的座位編號
-            string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string connectionString = DbConfig.BookingDb;
 
             using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
@@ -225,7 +226,7 @@ namespace WebForm1
             string seatNo = (seatIndex + 1).ToString();    
 
             // 將預訂信息保存到資料庫
-            string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Booking.accdb";
+            string connectionString = DbConfig.BookingDb;
 
             using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
@@ -284,7 +285,7 @@ namespace WebForm1
         private void SendReservationEmail(string venue, string seatNo, string date, string account, string username)
         {
             // 連接資料庫，讀取收件人的電子郵件地址
-            string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\\Database\\Data.accdb";
+            string connectionString = DbConfig.DataDb;
 
             using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
