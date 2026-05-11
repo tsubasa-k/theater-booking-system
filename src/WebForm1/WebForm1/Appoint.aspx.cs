@@ -225,60 +225,94 @@ namespace WebForm1
             string date = txtDate.Text;
             string seatNo = (seatIndex + 1).ToString();    
 
-            // 將預訂信息保存到資料庫
+            // 防禦：venue 表名一律走白名單；任何意外值都會拋例外（理論上不會發生）
+            VenueHelper.AssertSafeTable(venue);
+
+            // 將預訂信息保存到資料庫（透過 transaction 確保「檢查 + 寫入」原子性，
+            // 避免兩個使用者同時點同一個座位都得到「劃位成功」的 race condition）
             string connectionString = DbConfig.BookingDb;
 
             using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
                 connection.Open();
-
-                // 獲取現有記錄數量，生成新的預訂編號
-                string countQuery = string.Format("SELECT MAX(Num) FROM {0}", venue);
-                using (OleDbCommand countCommand = new OleDbCommand(countQuery, connection))
+                using (OleDbTransaction tx = connection.BeginTransaction())
                 {
-                    int record = (int)countCommand.ExecuteScalar();
-                    int newNum = record + 1;
-
-                    string sql = string.Format("INSERT INTO {0} VALUES (@Num, @Date, @SeatNo)", venue);
-
-
-                    OleDbCommand command = new OleDbCommand(sql, connection);
-                    
-                    command.Parameters.AddWithValue("@Num", newNum);
-                    command.Parameters.AddWithValue("@Date", date);
-                    command.Parameters.AddWithValue("@SeatNo", seatIndex + 1); // SeatNumber 從 1 開始
-
-                    int rowsAffected = command.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
+                    try
                     {
-                        // 發送郵件
-                        // 取得使用者資訊，包括電子郵件地址和使用者名稱
-                        if (Session["Account"] != null && Session["Username"] != null)
+                        // 1) 在 transaction 內再檢查一次該座位是否已被劃走
+                        //    （頁面顯示的 seatMap 可能是 1-2 秒前的快照，現在可能已被搶走）
+                        string checkSql = string.Format("SELECT COUNT(*) FROM {0} WHERE [Date] = @Date AND SeatNo = @SeatNo", venue);
+                        using (OleDbCommand checkCmd = new OleDbCommand(checkSql, connection, tx))
                         {
-                            string account = Convert.ToString(Session["Account"]);
-                            string username = Convert.ToString(Session["Username"]);
-                            // 在適當的地方輸出日誌
-                            System.Diagnostics.Debug.WriteLine($"Account: {account}, Username: {username}");
+                            checkCmd.Parameters.AddWithValue("@Date", date);
+                            checkCmd.Parameters.AddWithValue("@SeatNo", seatIndex + 1);
+                            int existing = Convert.ToInt32(checkCmd.ExecuteScalar());
+                            if (existing > 0)
+                            {
+                                tx.Rollback();
+                                string raceScript = "alert('該座位剛剛已被其他使用者劃走，請重選');";
+                                ScriptManager.RegisterStartupScript(this, this.GetType(), "RaceAlert", raceScript, true);
+                                LoadSeatMap(searchVenue);
+                                return;
+                            }
+                        }
 
-                            // 接下來使用 account 和 username
-                            SendReservationEmail(venue, seatNo, date, account, username);
+                        // 2) 取得新的 Num（MAX(Num) 在空表時為 DBNull，需 fallback 為 0）
+                        string countQuery = string.Format("SELECT MAX(Num) FROM {0}", venue);
+                        int newNum;
+                        using (OleDbCommand countCommand = new OleDbCommand(countQuery, connection, tx))
+                        {
+                            object result = countCommand.ExecuteScalar();
+                            newNum = (result == null || result == DBNull.Value) ? 1 : Convert.ToInt32(result) + 1;
+                        }
+
+                        // 3) 寫入
+                        string sql = string.Format("INSERT INTO {0} VALUES (@Num, @Date, @SeatNo)", venue);
+                        int rowsAffected;
+                        using (OleDbCommand command = new OleDbCommand(sql, connection, tx))
+                        {
+                            command.Parameters.AddWithValue("@Num", newNum);
+                            command.Parameters.AddWithValue("@Date", date);
+                            command.Parameters.AddWithValue("@SeatNo", seatIndex + 1);
+                            rowsAffected = command.ExecuteNonQuery();
+                        }
+
+                        if (rowsAffected > 0)
+                        {
+                            tx.Commit();
+
+                            // 寄送通知信
+                            if (Session["Account"] != null && Session["Username"] != null)
+                            {
+                                string account = Convert.ToString(Session["Account"]);
+                                string username = Convert.ToString(Session["Username"]);
+                                System.Diagnostics.Debug.WriteLine($"Account: {account}, Username: {username}");
+                                SendReservationEmail(venue, seatNo, date, account, username);
+                            }
+                            else
+                            {
+                                string script = "showAlert('郵件發送失敗!');";
+                                ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", script, true);
+                            }
+
+                            // 刷新頁面，重新載入座位圖
+                            LoadSeatMap(searchVenue);
                         }
                         else
                         {
-                            // Session 值不存在或為空，進行適當的處理
-                            string script = "showAlert('郵件發送失敗!');";
-                            ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", script, true);
+                            tx.Rollback();
                         }
-
-                        // 刷新頁面，重新載入座位圖
-                        LoadSeatMap(searchVenue);
                     }
-                    
+                    catch (Exception ex)
+                    {
+                        tx.Rollback();
+                        System.Diagnostics.Debug.WriteLine("劃位失敗: " + ex.Message);
+                        string errScript = "alert('劃位失敗，請稍後再試');";
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrAlert", errScript, true);
+                    }
                 }
-                
             }
-            
+
         }
 
         // 新增方法：發送預訂通知郵件
