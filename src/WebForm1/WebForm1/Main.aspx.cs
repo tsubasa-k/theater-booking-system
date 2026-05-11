@@ -26,8 +26,8 @@ namespace WebForm1
             bool isLoggedIn = Convert.ToBoolean(Session["LoggedIn"]);
             if (isLoggedIn)
             {
-                // 根據角色顯示或隱藏相應的項目
-                if (role == "管理員")
+                // 根據角色顯示或隱藏相應的項目（統一用資料庫的 raw role 比對："admin"）
+                if (role == "admin")
                 {
                     PlaceHolderAdmin.Visible = true; // 顯示管理者相關項目
                 }
@@ -36,7 +36,9 @@ namespace WebForm1
                     PlaceHolderAdmin.Visible = false; // 隱藏管理者相關項目
                 }
                 lblLoginStatus.Text = "成功登入!";
-                lblWelcome.Text = "歡迎，" + username + " (" + role + ")";
+                // UI 顯示時把 raw role 對應到中文
+                string roleDisplay = (role == "admin") ? "管理員" : "一般使用者";
+                lblWelcome.Text = "歡迎，" + username + " (" + roleDisplay + ")";
                 lblLoginStatus.Visible = true;
                 lblWelcome.Visible = true;
                 Button bookingButton = new Button();
@@ -131,15 +133,8 @@ namespace WebForm1
                         // 取得使用者角色資訊
                         role = reader["role"].ToString();
                     }
-                    // 根據角色返回對應的字串
-                    if (role == "admin")
-                    {
-                        return "管理員";
-                    }
-                    else
-                    {
-                        return "一般使用者";
-                    }
+                    // 一律回傳資料庫的 raw 值（"admin" / "user"），呼叫端負責顯示對應
+                    return role;
 
                 }
             }
